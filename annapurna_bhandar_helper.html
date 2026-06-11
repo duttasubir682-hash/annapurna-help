@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অন্নপূর্ণা ভাণ্ডার ফর্ম সহায়ক</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --saffron: #E8601A;
+    --gold: #F5A623;
+    --green: #2D7D46;
+    --cream: #FDF6EC;
+    --white: #FFFFFF;
+    --dark: #1A1A2E;
+    --mid: #4A4A6A;
+    --border: #E0D5C5;
+    --success: #27AE60;
+    --info: #2980B9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #E8601A 0%, #C0392B 50%, #8B0000 100%);
+    color: white;
+    text-align: center;
+    padding: 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+  }
+  header .flag-stripe {
+    display: flex; justify-content: center; gap: 4px; margin-bottom: 10px;
+  }
+  header .flag-stripe span {
+    height: 4px; width: 40px; border-radius: 2px;
+  }
+  .stripe-saffron { background: #FF9933; }
+  .stripe-white  { background: #FFFFFF; }
+  .stripe-green  { background: #138808; }
+
+  header h1 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    position: relative;
+  }
+  header p {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-top: 4px;
+    position: relative;
+  }
+
+  /* STEPS NAV */
+  .steps-nav {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .steps-nav::-webkit-scrollbar { display: none; }
+  .step-tab {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mid);
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .step-tab.active {
+    color: var(--saffron);
+    border-bottom-color: var(--saffron);
+  }
+  .step-tab.done {
+    color: var(--success);
+  }
+  .step-tab .step-num {
+    display: inline-flex;
+    width: 18px; height: 18px;
+    background: var(--border);
+    border-radius: 50%;
+    align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    margin-right: 5px;
+  }
+  .step-tab.active .step-num { background: var(--saffron); color: white; }
+  .step-tab.done .step-num  { background: var(--success); color: white; }
+
+  /* CONTAINER */
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* SECTION PANELS */
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SCAN CARD */
+  .scan-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1.5px dashed var(--border);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-card:hover { border-color: var(--saffron); background: #FFF9F5; }
+  .scan-card.uploaded { border-style: solid; border-color: var(--success); background: #F0FFF4; }
+  .scan-card .icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .scan-card h3 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+  .scan-card p { font-size: 0.75rem; color: var(--mid); }
+  .scan-card input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .scan-card .preview-thumb {
+    max-height: 120px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+  }
+  .scan-card.uploaded .preview-thumb { display: block; margin: 10px auto 0; }
+
+  /* OCR STATUS */
+  .ocr-status {
+    background: linear-gradient(90deg, #FFF3E0, #FFF8F0);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.82rem;
+    color: #7D4E00;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .ocr-status.show { display: flex; }
+  .ocr-status .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--gold);
+    border-top-color: var(--saffron);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* FORM SECTION */
+  .form-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .section-title {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1rem;
+    color: var(--saffron);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-badge {
+    background: var(--saffron);
+    color: white;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+  }
+
+  .field-row { margin-bottom: 14px; }
+  .field-row label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--mid);
+    margin-bottom: 5px;
+    font-family: 'Tiro Bangla', serif;
+  }
+  .field-row input, .field-row select, .field-row textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    background: #FAFAFA;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .field-row input:focus, .field-row select:focus, .field-row textarea:focus {
+    border-color: var(--saffron);
+    background: white;
+  }
+  .field-row input.auto-filled {
+    border-color: var(--success);
+    background: #F0FFF4;
+  }
+  .field-row textarea { resize: vertical; min-height: 70px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .radio-group label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; font-weight: 400;
+    cursor: pointer; color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .radio-group input[type=radio] {
+    width: auto; accent-color: var(--saffron);
+  }
+
+  /* CHECKBOX */
+  .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+  .checkbox-group label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; cursor: pointer;
+    color: var(--dark); font-family: 'Tiro Bangla', serif;
+    font-weight: 400;
+  }
+  .checkbox-group input[type=checkbox] {
+    width: 16px; height: 16px; accent-color: var(--saffron);
+    flex-shrink: 0;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--saffron), #C0392B);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: 'Tiro Bangla', serif;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,96,26,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: white;
+    color: var(--saffron);
+    border: 1.5px solid var(--saffron);
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Tiro Bangla', serif;
+  }
+
+  .btn-row {
+    display: flex; gap: 10px; margin-top: 16px;
+  }
+  .btn-row .btn-secondary { flex: 1; }
+  .btn-row .btn-primary { flex: 2; }
+
+  /* INFO BOX */
+  .info-box {
+    background: #EBF4FB;
+    border-left: 4px solid var(--info);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: #1A5276;
+    margin-bottom: 14px;
+  }
+  .info-box strong { font-family: 'Tiro Bangla', serif; }
+
+  /* SUCCESS */
+  .success-panel {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .success-panel .tick { font-size: 4rem; margin-bottom: 16px; }
+  .success-panel h2 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1.4rem;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .success-panel p { font-size: 0.85rem; color: var(--mid); margin-bottom: 20px; }
+
+  .summary-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem; text-align: left;
+    margin-bottom: 16px;
+  }
+  .summary-table th {
+    background: var(--cream);
+    padding: 8px 10px;
+    font-weight: 600;
+    color: var(--mid);
+    font-family: 'Tiro Bangla', serif;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #F0EDE8;
+    color: var(--dark);
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: var(--border);
+    border-radius: 4px;
+    height: 5px;
+    margin: 0 16px 0;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* ALERT */
+  .alert {
+    background: #FFF3CD;
+    border: 1px solid #FFEEBA;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: #856404;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 400px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* API KEY BANNER */
+  .api-key-banner {
+    background: #1A1A2E;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .api-key-banner label {
+    color: #aaa;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .api-key-banner input {
+    flex: 1;
+    min-width: 160px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1.5px solid #444;
+    background: #2A2A3E;
+    color: #eee;
+    font-size: 0.78rem;
+    font-family: monospace;
+    outline: none;
+  }
+  .api-key-banner input:focus { border-color: var(--gold); }
+  .api-key-banner .key-save-btn {
+    background: var(--saffron);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .api-key-banner .key-status {
+    font-size: 0.7rem;
+    color: #888;
+    width: 100%;
+    padding-left: 2px;
+  }
+  .api-key-banner .key-status.ok { color: #27AE60; }
+  .api-key-banner .key-status.err { color: #E74C3C; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="flag-stripe">
+    <span class="stripe-saffron"></span>
+    <span class="stripe-white"></span>
+    <span class="stripe-green"></span>
+  </div>
+  <h1>🌾 অন্নপূর্ণা ভাণ্ডার ফর্ম সহায়ক</h1>
+  <p>ছবি তুলুন → OCR হবে → ফর্ম স্বয়ংক্রিয় পূরণ হবে</p>
+</header>
+
+<!-- API KEY BANNER -->
+<div class="api-key-banner" id="apiKeyBanner">
+  <label>🔑 API Key:</label>
+  <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" oninput="onApiKeyInput()">
+  <button class="key-save-btn" onclick="saveApiKey()">Save</button>
+  <div class="key-status" id="apiKeyStatus">API key না দিলে OCR কাজ করবে না। Key browser-এই থাকবে, কোথাও যাবে না।</div>
+</div>
+
+<!-- Progress -->
+<div style="background:white; padding: 10px 16px 0;">
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" style="width: 20%"></div>
+  </div>
+</div>
+
+<!-- Steps Nav -->
+<div class="steps-nav" id="stepsNav">
+  <div class="step-tab active" data-step="0"><span class="step-num">1</span>নথি স্ক্যান</div>
+  <div class="step-tab" data-step="1"><span class="step-num">A</span>পরিচয়</div>
+  <div class="step-tab" data-step="2"><span class="step-num">B</span>রেশন কার্ড</div>
+  <div class="step-tab" data-step="3"><span class="step-num">C</span>সম্পদ</div>
+  <div class="step-tab" data-step="4"><span class="step-num">D</span>আয়/চাকরি</div>
+  <div class="step-tab" data-step="5"><span class="step-num">E-H</span>অন্যান্য</div>
+  <div class="step-tab" data-step="6"><span class="step-num">✓</span>সারসংক্ষেপ</div>
+</div>
+
+<div class="container">
+
+  <!-- PANEL 0: SCAN -->
+  <div class="panel active" id="panel-0">
+    <div class="alert">
+      📌 আধার কার্ড ও ব্যাংক পাসবুকের স্পষ্ট ছবি তুলুন। AI স্বয়ংক্রিয়ভাবে তথ্য পড়বে।
+    </div>
+
+    <div class="scan-card" id="aadhaarCard">
+      <input type="file" accept="image/*" capture="environment" id="aadhaarInput" onchange="handleScan(this,'aadhaar')">
+      <div class="icon">🪪</div>
+      <h3>আধার কার্ড</h3>
+      <p>ট্যাপ করুন বা ছবি তুলুন</p>
+      <img class="preview-thumb" id="aadhaarPreview" src="" alt="preview">
+    </div>
+
+    <div class="scan-card" id="passbookCard">
+      <input type="file" accept="image/*" capture="environment" id="passbookInput" onchange="handleScan(this,'passbook')">
+      <div class="icon">🏦</div>
+      <h3>ব্যাংক পাসবুক</h3>
+      <p>প্রথম পাতার ছবি তুলুন</p>
+      <img class="preview-thumb" id="passbookPreview" src="" alt="preview">
+    </div>
+
+    <div class="scan-card" id="rationCard">
+      <input type="file" accept="image/*" capture="environment" id="rationInput" onchange="handleScan(this,'ration')">
+      <div class="icon">🍚</div>
+      <h3>রেশন কার্ড</h3>
+      <p>সামনের পাতার ছবি তুলুন</p>
+      <img class="preview-thumb" id="rationPreview" src="" alt="preview">
+    </div>
+
+    <div class="scan-card" id="voterCard">
+      <input type="file" accept="image/*" capture="environment" id="voterInput" onchange="handleScan(this,'voter')">
+      <div class="icon">🗳️</div>
+      <h3>ভোটার কার্ড (EPIC)</h3>
+      <p>সামনে ও পিছনের ছবি তুলুন</p>
+      <img class="preview-thumb" id="voterPreview" src="" alt="preview">
+    </div>
+
+    <div class="ocr-status" id="ocrStatus">
+      <div class="spinner"></div>
+      <span id="ocrMsg">তথ্য পড়া হচ্ছে...</span>
+    </div>
+
+    <div class="form-section" id="ocrResult" style="display:none">
+      <div class="section-title">✅ OCR থেকে পাওয়া তথ্য</div>
+      <p style="font-size:0.8rem; color:var(--mid); margin-bottom:10px;">নিচের তথ্য স্বয়ংক্রিয়ভাবে ফর্মে যোগ হবে। যদি কোনো ভুল থাকে, পরের ধাপে সংশোধন করুন।</p>
+      <div id="ocrResultContent"></div>
+    </div>
+
+    <button class="btn-primary" onclick="goToStep(1)" id="nextBtn0" style="margin-top:8px;">
+      পরবর্তী ধাপ → ব্যক্তিগত তথ্য
+    </button>
+  </div>
+
+  <!-- PANEL 1: SECTION A - Family Identity -->
+  <div class="panel" id="panel-1">
+    <div class="info-box">
+      <strong>Section A – পারিবারিক পরিচয় (১২টি ঘর)</strong><br>
+      আধার থেকে পাওয়া তথ্য সবুজ রঙে দেখাবে।
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">A</span> আবেদনকারীর তথ্য</div>
+
+      <div class="field-row">
+        <label>পুরো নাম (বাংলায়) *</label>
+        <input type="text" id="nameBn" placeholder="যেমন: রীতা দেবী">
+      </div>
+      <div class="field-row">
+        <label>পুরো নাম (ইংরেজিতে) *</label>
+        <input type="text" id="nameEn" placeholder="As on Aadhaar">
+      </div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <label>জন্ম তারিখ *</label>
+          <input type="date" id="dob">
+        </div>
+        <div class="field-row">
+          <label>বয়স</label>
+          <input type="number" id="age" placeholder="বছর" readonly>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>লিঙ্গ *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="female" checked> মহিলা</label>
+          <label><input type="radio" name="gender" value="male"> পুরুষ</label>
+          <label><input type="radio" name="gender" value="other"> অন্যান্য</label>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>আধার নম্বর *</label>
+        <input type="text" id="aadhaarNo" placeholder="XXXX XXXX XXXX" maxlength="14">
+      </div>
+
+      <div class="field-row">
+        <label>মোবাইল নম্বর *</label>
+        <input type="tel" id="mobile" placeholder="আধারের সাথে লিঙ্কড নম্বর">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">A</span> ঠিকানা</div>
+      <div class="field-row">
+        <label>স্থায়ী ঠিকানা *</label>
+        <textarea id="address" placeholder="বাড়ি নং, পাড়া, গ্রাম/মহল্লা"></textarea>
+      </div>
+      <div class="two-col">
+        <div class="field-row">
+          <label>পিন কোড *</label>
+          <input type="text" id="pincode" placeholder="৭০XXXX" maxlength="6">
+        </div>
+        <div class="field-row">
+          <label>জেলা *</label>
+          <select id="district">
+            <option value="">বেছে নিন</option>
+            <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
+            <option>North 24 Parganas</option><option>South 24 Parganas</option>
+            <option>Purba Medinipur</option><option>Paschim Medinipur</option>
+            <option>Burdwan Purba</option><option>Burdwan Paschim</option>
+            <option>Birbhum</option><option>Bankura</option><option>Purulia</option>
+            <option>Murshidabad</option><option>Nadia</option><option>Malda</option>
+            <option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
+            <option>Cooch Behar</option><option>Jalpaiguri</option>
+            <option>Darjeeling</option><option>Alipurduar</option><option>Kalimpong</option>
+            <option>Jhargram</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field-row">
+          <label>ব্লক / পৌরসভা</label>
+          <input type="text" id="block" placeholder="Block / Municipality">
+        </div>
+        <div class="field-row">
+          <label>GP / Ward</label>
+          <input type="text" id="gpward" placeholder="Gram Panchayat / Ward">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">A</span> পারিবারিক তথ্য</div>
+      <div class="two-col">
+        <div class="field-row">
+          <label>পরিবারের মোট সদস্য</label>
+          <input type="number" id="familyMembers" placeholder="সংখ্যা">
+        </div>
+        <div class="field-row">
+          <label>বৈবাহিক অবস্থা</label>
+          <select id="marital">
+            <option value="">বেছে নিন</option>
+            <option>বিবাহিত</option>
+            <option>অবিবাহিত</option>
+            <option>বিধবা</option>
+            <option>তালাকপ্রাপ্তা</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>স্বামীর নাম / পিতার নাম</label>
+        <input type="text" id="guardianName" placeholder="নাম লিখুন">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goToStep(0)">← পূর্বে</button>
+      <button class="btn-primary" onclick="goToStep(2)">পরবর্তী → রেশন কার্ড</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: SECTION B - Ration Card -->
+  <div class="panel" id="panel-2">
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">B</span> রেশন কার্ডের তথ্য</div>
+      <div class="field-row">
+        <label>রেশন কার্ড আছে?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="hasRation" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="hasRation" value="no"> না</label>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>রেশন কার্ড নম্বর</label>
+        <input type="text" id="rationNo" placeholder="কার্ড নম্বর">
+      </div>
+      <div class="field-row">
+        <label>রেশন কার্ডের ধরন</label>
+        <select id="rationType">
+          <option value="">বেছে নিন</option>
+          <option>RKSY-I (অগ্রাধিকার)</option>
+          <option>RKSY-II</option>
+          <option>SPHH</option>
+          <option>PHH</option>
+          <option>AAY (অন্ত্যোদয়)</option>
+          <option>নেই</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SECTION C: Assets -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">C</span> সম্পদ ও বাসস্থান</div>
+      <div class="field-row">
+        <label>বাড়ির ধরন</label>
+        <select id="houseType">
+          <option value="">বেছে নিন</option>
+          <option>পাকা</option>
+          <option>আধা-পাকা</option>
+          <option>কাঁচা</option>
+          <option>ভাড়া</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>কৃষি জমি আছে?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="land" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="land" value="no" checked> না</label>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>চার চাকার গাড়ি আছে?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="vehicle" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="vehicle" value="no" checked> না</label>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>আয়কর দেন?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="incomeTax" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="incomeTax" value="no" checked> না</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goToStep(1)">← পূর্বে</button>
+      <button class="btn-primary" onclick="goToStep(3)">পরবর্তী → আয় তথ্য</button>
+    </div>
+  </div>
+
+  <!-- PANEL 3: SECTION D - Income & Employment -->
+  <div class="panel" id="panel-3">
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">D</span> আয় ও পেশা</div>
+      <div class="field-row">
+        <label>প্রধান পেশা</label>
+        <select id="occupation">
+          <option value="">বেছে নিন</option>
+          <option>গৃহিণী</option>
+          <option>কৃষিজীবী</option>
+          <option>দিনমজুর</option>
+          <option>ব্যবসা</option>
+          <option>অসংগঠিত ক্ষেত্রে কর্মী</option>
+          <option>বেকার</option>
+          <option>অন্যান্য</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>পরিবারের বার্ষিক মোট আয়</label>
+        <select id="annualIncome">
+          <option value="">বেছে নিন</option>
+          <option>১ লক্ষের কম</option>
+          <option>১–২ লক্ষ</option>
+          <option>২–৩ লক্ষ</option>
+          <option>৩ লক্ষের বেশি</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>সরকারি চাকরিজীবী?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="govtJob" value="yes"> হ্যাঁ (অযোগ্য)</label>
+          <label><input type="radio" name="govtJob" value="no" checked> না</label>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>পেনশন পান?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="pension" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="pension" value="no" checked> না</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION E: Bank Details from OCR -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">E</span> ব্যাংক তথ্য (পাসবুক থেকে)</div>
+      <div class="field-row">
+        <label>ব্যাংকের নাম *</label>
+        <input type="text" id="bankName" placeholder="Bank name">
+      </div>
+      <div class="field-row">
+        <label>শাখার নাম *</label>
+        <input type="text" id="branchName" placeholder="Branch name">
+      </div>
+      <div class="field-row">
+        <label>অ্যাকাউন্ট নম্বর *</label>
+        <input type="text" id="accountNo" placeholder="Account number">
+      </div>
+      <div class="field-row">
+        <label>IFSC কোড *</label>
+        <input type="text" id="ifscCode" placeholder="IFSC Code">
+      </div>
+      <div class="field-row">
+        <label>আধারের সাথে ব্যাংক লিঙ্ক আছে?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="bankLinked" value="yes" checked> হ্যাঁ</label>
+          <label><input type="radio" name="bankLinked" value="no"> না</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goToStep(2)">← পূর্বে</button>
+      <button class="btn-primary" onclick="goToStep(4)">পরবর্তী → অন্যান্য</button>
+    </div>
+  </div>
+
+  <!-- PANEL 4: SECTION E-H -->
+  <div class="panel" id="panel-4">
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">E</span> অন্যান্য পরিচয়পত্র</div>
+      <div class="field-row">
+        <label>ভোটার কার্ড নম্বর</label>
+        <input type="text" id="voterIdNo" placeholder="Voter ID">
+      </div>
+      <div class="field-row">
+        <label>PAN কার্ড আছে?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="hasPan" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="hasPan" value="no" checked> না</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">F</span> সামাজিক অবস্থান</div>
+      <div class="field-row">
+        <label>বর্গ</label>
+        <select id="category">
+          <option value="">বেছে নিন</option>
+          <option>General</option>
+          <option>OBC-A</option>
+          <option>OBC-B</option>
+          <option>SC</option>
+          <option>ST</option>
+          <option>Minority</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>প্রতিবন্ধী?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="disabled" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="disabled" value="no" checked> না</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">G</span> বর্তমান সুবিধা</div>
+      <div class="field-row">
+        <label>বর্তমানে কোন সরকারি প্রকল্পে আছেন?</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="lakshmiBhandar"> লক্ষ্মীর ভাণ্ডার</label>
+          <label><input type="checkbox" id="swasthyaSathi"> স্বাস্থ্য সাথী</label>
+          <label><input type="checkbox" id="krishakBandhu"> কৃষকবন্ধু</label>
+          <label><input type="checkbox" id="kanyashree"> কন্যাশ্রী</label>
+          <label><input type="checkbox" id="rupashree"> রূপশ্রী</label>
+          <label><input type="checkbox" id="manabikPension"> মানবিক পেনশন</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title"><span class="section-badge">H</span> ঘোষণা</div>
+      <div class="field-row">
+        <label>স্থান</label>
+        <input type="text" id="declarationPlace" placeholder="যেখানে ফর্ম পূরণ করছেন">
+      </div>
+      <div class="field-row">
+        <label>তারিখ</label>
+        <input type="date" id="declarationDate">
+      </div>
+      <div style="margin-top:10px;">
+        <label style="display:flex;align-items:flex-start;gap:10px;font-size:0.8rem;color:var(--mid);">
+          <input type="checkbox" id="declaration" style="margin-top:3px;accent-color:var(--saffron);">
+          <span>আমি ঘোষণা করছি যে উপরের সমস্ত তথ্য সঠিক এবং সত্য। কোনো তথ্য মিথ্যা হলে আমি সরকারি নিয়ম অনুযায়ী দায়ী থাকব।</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goToStep(3)">← পূর্বে</button>
+      <button class="btn-primary" onclick="generateSummary()">✓ সারসংক্ষেপ দেখুন</button>
+    </div>
+  </div>
+
+  <!-- PANEL 5: SUMMARY + PDF + PORTAL -->
+  <div class="panel" id="panel-5">
+    <div class="success-panel">
+      <div class="tick">✅</div>
+      <h2>ফর্ম প্রস্তুত!</h2>
+      <p>নিচে PDF ডাউনলোড করুন অথবা অনলাইনে জমা দিতে Cheat Sheet ব্যবহার করুন।</p>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <button class="btn-primary" onclick="downloadPDF()" style="padding:14px 10px;font-size:0.85rem;">
+        📄 PDF ডাউনলোড
+      </button>
+      <button class="btn-primary" onclick="openPortalWithCheatSheet()" style="padding:14px 10px;font-size:0.85rem;background:linear-gradient(135deg,#2D7D46,#1a5c30);">
+        🌐 অনলাইনে জমা দিন
+      </button>
+    </div>
+
+    <!-- CHEAT SHEET (shows after portal button clicked) -->
+    <div id="cheatSheet" style="display:none;">
+      <div class="form-section" style="border:2px solid var(--green);">
+        <div class="section-title" style="color:var(--green);">
+          📋 Copy-Paste Cheat Sheet
+          <span style="font-size:0.7rem;color:var(--mid);font-family:DM Sans;margin-left:auto;">পোর্টালে এই তথ্যগুলো paste করুন</span>
+        </div>
+        <div class="alert" style="margin-bottom:12px;">
+          👆 পোর্টাল নতুন tab-এ খুলেছে। নিচের প্রতিটি ঘরের পাশে <b>Copy</b> বোতামে চাপুন → পোর্টালে paste করুন।
+        </div>
+        <div id="cheatSheetContent"></div>
+      </div>
+    </div>
+
+    <!-- SUMMARY TABLE -->
+    <div class="form-section">
+      <div class="section-title">📋 আবেদনের সারসংক্ষেপ</div>
+      <table class="summary-table" id="summaryTable"></table>
+    </div>
+
+    <div class="info-box">
+      <strong>জমা দেওয়ার জায়গা:</strong><br>
+      • BDO / SDO অফিস &nbsp;|&nbsp; পৌরসভা / নগরপালিকা<br>
+      • অনলাইন: <strong>socialsecurity.wb.gov.in</strong><br>
+      • শেষ তারিখ: <strong>২৫ আগস্ট ২০২৬</strong>
+    </div>
+
+    <button class="btn-secondary" onclick="goToStep(4)" style="width:100%;margin-top:4px;">← তথ্য সংশোধন করুন</button>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+// ==================== STATE ====================
+let currentStep = 0;
+const totalSteps = 6;
+let ocrData = {};
+
+// ==================== STEP NAV ====================
+function goToStep(n) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active', 'done');
+    if (i === n) t.classList.add('active');
+    else if (i < n) t.classList.add('done');
+  });
+
+  const pct = Math.round(((n + 1) / totalSteps) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  currentStep = n;
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.step-tab').forEach(tab => {
+  tab.addEventListener('click', () => goToStep(+tab.dataset.step));
+});
+
+// ==================== DOB → AGE ====================
+document.getElementById('dob').addEventListener('change', function() {
+  const dob = new Date(this.value);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  document.getElementById('age').value = age;
+});
+
+// Set today's date for declaration
+document.getElementById('declarationDate').valueAsDate = new Date();
+
+// ==================== API KEY MANAGEMENT ====================
+let anthropicApiKey = '';
+
+function loadApiKey() {
+  const saved = localStorage.getItem('annapurna_api_key');
+  if (saved) {
+    anthropicApiKey = saved;
+    document.getElementById('apiKeyInput').value = saved;
+    setKeyStatus('✅ Key লোড হয়েছে — OCR চালু আছে', 'ok');
+  }
+}
+
+function onApiKeyInput() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) {
+    setKeyStatus('API key না দিলে OCR কাজ করবে না।', '');
+  } else if (!val.startsWith('sk-ant-')) {
+    setKeyStatus('⚠️ Key সঠিক মনে হচ্ছে না। "sk-ant-" দিয়ে শুরু হওয়া উচিত।', 'err');
+  } else {
+    setKeyStatus('↑ Save করুন', '');
+  }
+}
+
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) { setKeyStatus('⚠️ Key খালি!', 'err'); return; }
+  if (!val.startsWith('sk-ant-')) { setKeyStatus('⚠️ Key ভুল মনে হচ্ছে।', 'err'); return; }
+  anthropicApiKey = val;
+  localStorage.setItem('annapurna_api_key', val);
+  setKeyStatus('✅ Saved! OCR এখন কাজ করবে।', 'ok');
+}
+
+function setKeyStatus(msg, cls) {
+  const el = document.getElementById('apiKeyStatus');
+  el.textContent = msg;
+  el.className = 'key-status' + (cls ? ' ' + cls : '');
+}
+
+loadApiKey();
+
+// ==================== IMAGE UPLOAD & OCR ====================
+async function handleScan(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const previewMap = { aadhaar:'aadhaarPreview', passbook:'passbookPreview', ration:'rationPreview', voter:'voterPreview' };
+  const cardMap   = { aadhaar:'aadhaarCard',    passbook:'passbookCard',    ration:'rationCard',    voter:'voterCard' };
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById(previewMap[type]).src = e.target.result;
+    document.getElementById(cardMap[type]).classList.add('uploaded');
+  };
+  reader.readAsDataURL(file);
+
+  await runOCR(file, type);
+}
+
+async function runOCR(file, type) {
+  const status = document.getElementById('ocrStatus');
+  const msg = document.getElementById('ocrMsg');
+  status.classList.add('show');
+  const loadMsg = { aadhaar:'আধার কার্ড পড়া হচ্ছে...', passbook:'পাসবুক পড়া হচ্ছে...', ration:'রেশন কার্ড পড়া হচ্ছে...', voter:'ভোটার কার্ড পড়া হচ্ছে...' };
+  msg.textContent = loadMsg[type] || 'তথ্য পড়া হচ্ছে...';
+
+  try {
+    if (!anthropicApiKey) {
+      msg.textContent = '⚠️ API Key দেওয়া নেই। উপরে Key দিয়ে Save করুন।';
+      status.classList.remove('show');
+      return;
+    }
+    const base64 = await fileToBase64(file);
+    const mediaType = file.type || 'image/jpeg';
+
+    const prompts = {
+      aadhaar: `Extract all text from this Aadhaar card image. Return ONLY a JSON object with these fields (leave empty string if not found):
+{"name":"full name in English","nameBn":"name in Bengali if visible","dob":"DD/MM/YYYY","gender":"Male/Female/Other","aadhaarNo":"XXXX XXXX XXXX","address":"full address","pincode":"6 digit pincode"}
+Return ONLY the JSON, no other text.`,
+      passbook: `Extract all text from this bank passbook image. Return ONLY a JSON object:
+{"bankName":"bank name","branchName":"branch name","accountNo":"account number","ifscCode":"IFSC code","accountHolder":"account holder name","accountType":"savings/current"}
+Return ONLY the JSON, no other text.`,
+      ration: `Extract all text from this Ration Card image. Return ONLY a JSON object (leave empty string if not found):
+{"rationNo":"ration card number","rationType":"PHH/AAY/RKSY-I/RKSY-II/SPHH or other","headName":"head of family name","headNameBn":"name in Bengali","fpsName":"fair price shop name","district":"district name","address":"full address","familyMembers":"number of members as string","category":"SC/ST/OBC/General if visible"}
+Return ONLY the JSON, no other text.`,
+      voter: `Extract all text from this Voter ID (EPIC) card image. Return ONLY a JSON object (leave empty string if not found):
+{"voterIdNo":"EPIC number starting with letters","voterName":"voter name in English","voterNameBn":"voter name in Bengali","fatherOrHusbandName":"relation name","dob":"DD/MM/YYYY or year","gender":"Male/Female","address":"full address","assemblyConstituency":"assembly constituency name","partNo":"part number if visible"}
+Return ONLY the JSON, no other text.`
+    };
+    const prompt = prompts[type] || prompts.aadhaar;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicApiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+            { type: "text", text: prompt }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    ocrData = { ...ocrData, ...parsed };
+    if (type === 'aadhaar')  fillAadhaarFields(parsed);
+    else if (type === 'passbook') fillPassbookFields(parsed);
+    else if (type === 'ration')   fillRationFields(parsed);
+    else if (type === 'voter')    fillVoterFields(parsed);
+
+    const doneMsg = { aadhaar:'✅ আধার তথ্য পড়া হয়েছে!', passbook:'✅ পাসবুক তথ্য পড়া হয়েছে!', ration:'✅ রেশন কার্ড তথ্য পড়া হয়েছে!', voter:'✅ ভোটার কার্ড তথ্য পড়া হয়েছে!' };
+    msg.textContent = doneMsg[type] || '✅ তথ্য পড়া হয়েছে!';
+    showOCRResult();
+
+  } catch (err) {
+    msg.textContent = '⚠️ স্বয়ংক্রিয় পঠন ব্যর্থ। নিজে তথ্য দিন। (' + (err.message || err) + ')';
+    console.error(err);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function fillAadhaarFields(d) {
+  if (d.name)      setAutoFill('nameEn', d.name);
+  if (d.nameBn)    setAutoFill('nameBn', d.nameBn);
+  if (d.aadhaarNo) setAutoFill('aadhaarNo', d.aadhaarNo);
+  if (d.address)   setAutoFill('address', d.address);
+  if (d.pincode)   setAutoFill('pincode', d.pincode);
+  if (d.dob) {
+    // Convert DD/MM/YYYY to YYYY-MM-DD for input[type=date]
+    const parts = d.dob.split('/');
+    if (parts.length === 3) {
+      const iso = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+      const dobEl = document.getElementById('dob');
+      dobEl.value = iso;
+      dobEl.classList.add('auto-filled');
+      dobEl.dispatchEvent(new Event('change'));
+    }
+  }
+  if (d.gender) {
+    const gval = d.gender.toLowerCase().includes('female') ? 'female' :
+                 d.gender.toLowerCase().includes('male')   ? 'male' : 'other';
+    const radio = document.querySelector(`input[name=gender][value=${gval}]`);
+    if (radio) radio.checked = true;
+  }
+}
+
+function fillPassbookFields(d) {
+  if (d.bankName)      setAutoFill('bankName', d.bankName);
+  if (d.branchName)    setAutoFill('branchName', d.branchName);
+  if (d.accountNo)     setAutoFill('accountNo', d.accountNo);
+  if (d.ifscCode)      setAutoFill('ifscCode', d.ifscCode);
+  if (d.accountHolder) setAutoFill('nameEn', d.accountHolder);
+}
+
+function fillRationFields(d) {
+  if (d.rationNo)       setAutoFill('rationNo', d.rationNo);
+  if (d.headName)       setAutoFill('nameEn', d.headName);
+  if (d.headNameBn)     setAutoFill('nameBn', d.headNameBn);
+  if (d.district)       { const el = document.getElementById('district'); if(el){ Array.from(el.options).forEach(o=>{ if(o.value.toLowerCase().includes(d.district.toLowerCase())) el.value=o.value; }); } }
+  if (d.address)        setAutoFill('address', d.address);
+  if (d.familyMembers)  setAutoFill('familyMembers', d.familyMembers);
+  if (d.rationType) {
+    const el = document.getElementById('rationType');
+    if (el) {
+      Array.from(el.options).forEach(o => {
+        if (o.value.toUpperCase().includes(d.rationType.toUpperCase()) || d.rationType.toUpperCase().includes(o.value.split(' ')[0])) el.value = o.value;
+      });
+    }
+  }
+  if (d.category) {
+    const el = document.getElementById('category');
+    if (el) { Array.from(el.options).forEach(o => { if(o.value.toUpperCase() === d.category.toUpperCase()) el.value = o.value; }); }
+  }
+}
+
+function fillVoterFields(d) {
+  if (d.voterIdNo)     setAutoFill('voterIdNo', d.voterIdNo);
+  if (d.voterName)     setAutoFill('nameEn', d.voterName);
+  if (d.voterNameBn)   setAutoFill('nameBn', d.voterNameBn);
+  if (d.fatherOrHusbandName) setAutoFill('guardianName', d.fatherOrHusbandName);
+  if (d.address)       setAutoFill('address', d.address);
+  if (d.dob) {
+    const parts = d.dob.split('/');
+    if (parts.length === 3) {
+      const iso = parts[2] + '-' + parts[1].padStart(2,'0') + '-' + parts[0].padStart(2,'0');
+      const dobEl = document.getElementById('dob');
+      if (dobEl && !dobEl.value) { dobEl.value = iso; dobEl.classList.add('auto-filled'); dobEl.dispatchEvent(new Event('change')); }
+    }
+  }
+  if (d.gender) {
+    const gval = d.gender.toLowerCase().includes('female') ? 'female' : d.gender.toLowerCase().includes('male') ? 'male' : 'other';
+    const radio = document.querySelector('input[name=gender][value='+gval+']');
+    if (radio) radio.checked = true;
+  }
+}
+
+function setAutoFill(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) {
+    el.value = val;
+    el.classList.add('auto-filled');
+  }
+}
+
+function showOCRResult() {
+  const container = document.getElementById('ocrResult');
+  const content = document.getElementById('ocrResultContent');
+  container.style.display = 'block';
+
+  const entries = [];
+  const labels = {
+    name:'নাম (ইংরেজি)', nameBn:'নাম (বাংলা)', dob:'জন্ম তারিখ',
+    gender:'লিঙ্গ', aadhaarNo:'আধার নম্বর', address:'ঠিকানা',
+    pincode:'পিন কোড', bankName:'ব্যাংক', branchName:'শাখা',
+    accountNo:'অ্যাকাউন্ট নম্বর', ifscCode:'IFSC',
+    rationNo:'রেশন কার্ড নম্বর', rationType:'রেশন কার্ডের ধরন',
+    headName:'পরিবার প্রধান (ইং)', headNameBn:'পরিবার প্রধান (বাংলা)',
+    familyMembers:'পরিবারের সদস্য',
+    voterIdNo:'ভোটার কার্ড নম্বর', voterName:'ভোটারের নাম',
+    voterNameBn:'ভোটারের নাম (বাংলা)', assemblyConstituency:'বিধানসভা কেন্দ্র',
+    fatherOrHusbandName:'পিতা/স্বামীর নাম'
+  };
+
+  for (const [k, v] of Object.entries(ocrData)) {
+    if (v && labels[k]) {
+      entries.push(`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0EDE8;font-size:0.8rem;">
+        <span style="color:var(--mid);font-family:'Tiro Bangla',serif;">${labels[k]}</span>
+        <span style="color:var(--green);font-weight:600;max-width:55%;text-align:right;">${v}</span>
+      </div>`);
+    }
+  }
+  content.innerHTML = entries.join('') || '<p style="color:var(--mid);font-size:0.8rem;">কোনো তথ্য পাওয়া যায়নি</p>';
+}
+
+// ==================== HELPERS ====================
+function v(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  if (el.type === 'radio') {
+    const checked = document.querySelector('input[name="'+el.name+'"]:checked');
+    return checked ? checked.value : '';
+  }
+  return el.value || '';
+}
+function vRadio(name) {
+  const checked = document.querySelector('input[name="'+name+'"]:checked');
+  return checked ? checked.value : '';
+}
+function getFormData() {
+  return {
+    'নাম (বাংলায়)':         v('nameBn'),
+    'নাম (ইংরেজিতে)':       v('nameEn'),
+    'জন্ম তারিখ':           v('dob'),
+    'বয়স':                  v('age'),
+    'লিঙ্গ':                vRadio('gender'),
+    'আধার নম্বর':           v('aadhaarNo'),
+    'মোবাইল নম্বর':         v('mobile'),
+    'স্থায়ী ঠিকানা':        v('address'),
+    'জেলা':                 v('district'),
+    'ব্লক / পৌরসভা':        v('block'),
+    'GP / Ward':             v('gpward'),
+    'পিন কোড':              v('pincode'),
+    'পরিবারের সদস্য':       v('familyMembers'),
+    'বৈবাহিক অবস্থা':       v('marital'),
+    'স্বামী / পিতার নাম':   v('guardianName'),
+    'রেশন কার্ড নম্বর':     v('rationNo'),
+    'রেশন কার্ডের ধরন':     v('rationType'),
+    'বাড়ির ধরন':            v('houseType'),
+    'পেশা':                  v('occupation'),
+    'বার্ষিক আয়':           v('annualIncome'),
+    'ব্যাংকের নাম':         v('bankName'),
+    'শাখার নাম':            v('branchName'),
+    'অ্যাকাউন্ট নম্বর':     v('accountNo'),
+    'IFSC কোড':              v('ifscCode'),
+    'ভোটার কার্ড নম্বর':    v('voterIdNo'),
+    'বর্গ':                  v('category'),
+  };
+}
+
+// ==================== SUMMARY ====================
+function generateSummary() {
+  if (!document.getElementById('declaration').checked) {
+    alert('অনুগ্রহ করে ঘোষণায় সম্মতি দিন।');
+    return;
+  }
+  const data = getFormData();
+  const table = document.getElementById('summaryTable');
+  table.innerHTML = '<tr><th>বিষয়</th><th>তথ্য</th></tr>' +
+    Object.entries(data)
+      .filter(([,val]) => val)
+      .map(([k,val]) => `<tr><td>${k}</td><td>${val}</td></tr>`).join('');
+
+  // Hide cheat sheet until portal button clicked
+  document.getElementById('cheatSheet').style.display = 'none';
+  goToStep(5);
+}
+
+// ==================== CHEAT SHEET ====================
+function openPortalWithCheatSheet() {
+  window.open('https://socialsecurity.wb.gov.in', '_blank');
+  const data = getFormData();
+  const sheet = document.getElementById('cheatSheet');
+  const content = document.getElementById('cheatSheetContent');
+
+  const items = Object.entries(data).filter(([,val]) => val);
+  content.innerHTML = items.map(([label, val]) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.7rem;color:var(--mid);font-family:'Tiro Bangla',serif;">${label}</div>
+        <div style="font-size:0.88rem;font-weight:600;color:var(--dark);word-break:break-all;">${val}</div>
+      </div>
+      <button onclick="copyText('${val.replace(/'/g,"\'")}', this)"
+        style="flex-shrink:0;background:var(--saffron);color:white;border:none;border-radius:6px;
+               padding:6px 10px;font-size:0.72rem;cursor:pointer;font-weight:600;">
+        Copy
+      </button>
+    </div>
+  `).join('');
+
+  sheet.style.display = 'block';
+  sheet.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.style.background = 'var(--success)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = 'var(--saffron)'; }, 1500);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied!';
+    btn.style.background = 'var(--success)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = 'var(--saffron)'; }, 1500);
+  });
+}
+
+// ==================== PDF GENERATION ====================
+function downloadPDF() {
+  const data = getFormData();
+  const today = new Date().toLocaleDateString('bn-IN');
+
+  const rows = Object.entries(data).filter(([,v]) => v)
+    .map(([k,v]) => `<tr><td style="padding:7px 10px;border-bottom:1px solid #eee;color:#555;font-family:'Tiro Bangla',serif;font-size:13px;width:40%">${k}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;font-weight:600;font-size:13px;">${v}</td></tr>`).join('');
+
+  const htmlContent = `<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=DM+Sans:wght@400;600&display=swap');
+  body { font-family:'DM Sans',sans-serif; margin:0; padding:20px; color:#1a1a2e; }
+  .header { background:linear-gradient(135deg,#E8601A,#8B0000); color:white; padding:20px; border-radius:10px; text-align:center; margin-bottom:20px; }
+  .header h1 { font-family:'Tiro Bangla',serif; font-size:20px; margin:0 0 4px; }
+  .header p { font-size:11px; opacity:.85; margin:0; }
+  .section { background:white; border:1px solid #e0d5c5; border-radius:8px; margin-bottom:14px; overflow:hidden; }
+  .section-head { background:#FFF3E0; padding:8px 14px; font-family:'Tiro Bangla',serif; font-size:13px; font-weight:600; color:#E8601A; border-bottom:1px solid #e0d5c5; }
+  table { width:100%; border-collapse:collapse; }
+  .footer { text-align:center; font-size:10px; color:#999; margin-top:20px; border-top:1px solid #eee; padding-top:10px; }
+  .declaration { background:#f0fff4; border:1px solid #27ae60; border-radius:8px; padding:12px 14px; margin:14px 0; font-size:12px; color:#1a5c30; font-family:'Tiro Bangla',serif; }
+  .sig-box { border-top:2px solid #333; width:160px; margin:30px 0 4px auto; }
+  .sig-label { text-align:right; font-size:11px; color:#555; }
+  @media print { body { padding:10px; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🌾 অন্নপূর্ণা ভাণ্ডার প্রকল্প — আবেদন ফর্ম</h1>
+  <p>পশ্চিমবঙ্গ সরকার | Women & Child Development and Social Welfare Dept.</p>
+</div>
+
+<div class="section">
+  <div class="section-head">📋 আবেদনকারীর সম্পূর্ণ তথ্য</div>
+  <table>${rows}</table>
+</div>
+
+<div class="declaration">
+  ✅ আমি ঘোষণা করছি যে উপরের সমস্ত তথ্য সঠিক এবং সত্য। কোনো তথ্য মিথ্যা প্রমাণিত হলে আমি সরকারি নিয়ম অনুযায়ী দায়ী থাকব।
+</div>
+
+<div class="sig-box"></div>
+<div class="sig-label">আবেদনকারীর স্বাক্ষর</div>
+
+<div class="info-box" style="background:#ebf4fb;border-left:4px solid #2980b9;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#1a5276;margin-top:16px;">
+  <strong>জমা দেওয়ার জায়গা:</strong> BDO / SDO অফিস | পৌরসভা | অনলাইন: socialsecurity.wb.gov.in<br>
+  <strong>শেষ তারিখ:</strong> ২৫ আগস্ট ২০২৬
+</div>
+
+<div class="footer">তৈরি হয়েছে: ${today} | অন্নপূর্ণা ভাণ্ডার ফর্ম সহায়ক অ্যাপ</div>
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(htmlContent);
+  win.document.close();
+  setTimeout(() => win.print(), 800);
+}
+</script>
+
+<style media="print">
+  header, .steps-nav, .progress-wrap, .btn-row, button, .scan-card, .ocr-status { display: none !important; }
+  .panel { display: block !important; }
+  .form-section { box-shadow: none; border: 1px solid #ddd; }
+</style>
+
+</body>
+</html>
